@@ -1,9 +1,0 @@
-@go.Package { name = "github.com/47monad/sercon/go-gen/logconf" }
-@ModuleInfo { minPklVersion = "0.26.0" }
-module o47monad.sercon.LogConfig
-
-import "package://pkg.pkl-lang.org/pkl-go/pkl.golang@0.8.0#/go.pkl"
-
-typealias Level = "fatal"|"error"|"warn"|"info"|"debug"
-
-level: Level

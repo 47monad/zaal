@@ -1,5 +1,0 @@
-amends "package://pkg.pkl-lang.org/pkl-go/pkl.golang@0.8.0#/GeneratorSettings.pkl"
-
-structTags {
-  ["json"] = "%{name},omitempty"
-}

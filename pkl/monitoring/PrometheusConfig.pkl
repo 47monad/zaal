@@ -1,9 +1,0 @@
-@go.Package { name = "github.com/47monad/sercon/go-gen/prometheusconf"}
-@ModuleInfo { minPklVersion = "0.26.0" }
-module o47monad.sercon.PrometheusConfig
-
-import "package://pkg.pkl-lang.org/pkl-go/pkl.golang@0.8.0#/go.pkl"
-
-enabled: Boolean
-
-useGrpcMetrics: Boolean

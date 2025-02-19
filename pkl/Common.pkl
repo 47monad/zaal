@@ -1,7 +1,0 @@
-@go.Package { name = "github.com/47monad/sercon/go-gen/common" }
-@ModuleInfo { minPklVersion = "0.26.0" }
-module o47monad.sercon.Common
-
-import "package://pkg.pkl-lang.org/pkl-go/pkl.golang@0.8.0#/go.pkl"
-
-typealias Port = UInt16(this > 0)
