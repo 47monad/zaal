@@ -1,22 +1,12 @@
-package sercon
+package zaal
 
 import (
 	"encoding/json"
 	"os"
 	"path/filepath"
-
-	"github.com/joho/godotenv"
 )
 
-func LoadEnv(path string) error {
-	err := godotenv.Load(path)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func WriteToJson(c *CueConfig, outputPath string) error {
+func WriteToJson(c *Config, outputPath string) error {
 	jsonData, err := json.MarshalIndent(c, "", "  ")
 	if err != nil {
 		return err

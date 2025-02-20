@@ -1,2 +1,2 @@
 build:
-	go build -o dist/sercon main.go
+	go build -o build/zaal main.go

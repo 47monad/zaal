@@ -1,10 +1,9 @@
-module github.com/47monad/sercon
+module github.com/47monad/zaal
 
 go 1.22.3
 
 require (
 	cuelang.org/go v0.12.0
-	github.com/apple/pkl-go v0.8.0
 	github.com/joho/godotenv v1.5.1
 )
 
@@ -19,8 +18,6 @@ require (
 	github.com/pelletier/go-toml/v2 v2.2.3 // indirect
 	github.com/protocolbuffers/txtpbfmt v0.0.0-20241112170944-20d2c9ebc01d // indirect
 	github.com/rogpeppe/go-internal v1.13.2-0.20241226121412-a5dc8ff20d0a // indirect
-	github.com/vmihailenco/msgpack/v5 v5.4.1 // indirect
-	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	golang.org/x/mod v0.22.0 // indirect
 	golang.org/x/net v0.34.0 // indirect
 	golang.org/x/oauth2 v0.25.0 // indirect

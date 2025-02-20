@@ -1,4 +1,4 @@
-# Sercon
+# Zaal
 
 🚧 **Project Status: Early Stages of Development** 🚧
 
@@ -8,7 +8,7 @@
 
 ## Overview
 
-Welcome to **Sercon**! This repository is under **heavy development** and is expected to reach a production-ready state in the coming months. While we are working hard to ensure the codebase becomes robust, scalable, and feature-complete, there are currently many features and improvements being added regularly.
+Welcome to **Zaal**! This repository is under **heavy development** and is expected to reach a production-ready state in the coming months. While we are working hard to ensure the codebase becomes robust, scalable, and feature-complete, there are currently many features and improvements being added regularly.
 
 Our goal is to make this project stable, secure, and ready for production usage as soon as possible.
 
