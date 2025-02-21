@@ -5,7 +5,7 @@ package db
   username?: string
   password?: string
   dbName?: string
-  hosts!: [string, ...string]
+  hosts: [...string]
   options: {
     replicaSet?: string
   }

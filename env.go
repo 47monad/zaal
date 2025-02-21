@@ -33,7 +33,6 @@ func setFields(val reflect.Value) error {
 			tagName := strings.ToUpper(envTag)
 			envValue := os.Getenv(tagName)
 			if envValue != "" {
-				fmt.Println(envTag, envValue)
 				switch fieldVal.Kind() {
 				case reflect.String:
 					fieldVal.SetString(envValue)
