@@ -1,6 +1,7 @@
 package cue
 
 import (
+  "github.com/47monad/zaal/cue/broker"
   "github.com/47monad/zaal/cue/db"
   "github.com/47monad/zaal/cue/log"
   "github.com/47monad/zaal/cue/interface"
@@ -19,6 +20,7 @@ import (
   mode: *"normal" | #Mode
   logging: log.config
   mongodb?: db.mongodb
+  rabbitmq?: broker.rabbitmq
   prometheus?: monitoring.prometheus
   grpc?: interface.grpc
   http?: interface.http

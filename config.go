@@ -17,6 +17,10 @@ type MongodbConfig struct {
 	Options  MongodbOptions `json:"options"`
 }
 
+type RabbitMQConfig struct {
+	URI string `json:"uri" env:"rabbitmq_uri"`
+}
+
 type PrometheusConfig struct {
 	GRPCMetrics bool `json:"grpcMetrics"`
 }
@@ -45,6 +49,7 @@ type Config struct {
 	Host       string            `json:"host" env:"host"`
 	Logging    LoggingConfig     `json:"logging"`
 	Mongodb    *MongodbConfig    `json:"mongodb,omitempty"`
+	RabbiMQ    *RabbitMQConfig   `json:"rabbitmq,omitempty"`
 	Prometheus *PrometheusConfig `json:"prometheus,omitempty"`
 	GRPC       *GRPCConfig       `json:"grpc,omitempty"`
 	HTTP       *HTTPConfig       `json:"http,omitempty"`
