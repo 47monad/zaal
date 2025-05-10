@@ -13,8 +13,18 @@ service: {
     port: 8787
   }
   grpc: {
-    features: {
-      healthCheck: true
+    clients: {
+      uwc: {
+        address: "default.com/here"
+      }
+    }
+    servers: {
+      main: {
+        port: 9567
+        features: {
+          healthCheck: true
+        }
+      }
     }
   }
 }

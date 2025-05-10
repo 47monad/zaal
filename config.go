@@ -31,9 +31,18 @@ type GRPCFeatures struct {
 	Logging     bool `json:"logging"`
 }
 
-type GRPCConfig struct {
+type GRPCClientConfig struct {
+	Address string `json:"address" env:"grpc_client_address"`
+}
+
+type GRPCServerConfig struct {
 	Port     int          `json:"port" env:"grpc_port"`
 	Features GRPCFeatures `json:"features"`
+}
+
+type GRPCConfig struct {
+	Clients map[string]GRPCClientConfig `json:"clients"`
+	Servers map[string]GRPCServerConfig `json:"servers"`
 }
 
 type HTTPConfig struct {
