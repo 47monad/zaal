@@ -116,9 +116,13 @@ func TestConfigStructure(t *testing.T) {
 
 	t.Run("HTTPConfig_struct", func(t *testing.T) {
 		cfg := zaal.HTTPConfig{
-			Port: 8080,
+			Servers: map[string]zaal.HTTPServerConfig{
+				"main": {
+					Port: 8080,
+				},
+			},
 		}
-		assert.Equal(t, 8080, cfg.Port)
+		assert.Equal(t, 8080, cfg.Servers["main"].Port)
 	})
 
 	t.Run("full_struct", func(t *testing.T) {
@@ -166,7 +170,11 @@ func TestConfigStructure(t *testing.T) {
 				},
 			},
 			HTTP: &zaal.HTTPConfig{
-				Port: 8080,
+				Servers: map[string]zaal.HTTPServerConfig{
+					"main": {
+						Port: 8080,
+					},
+				},
 			},
 		}
 
@@ -193,7 +201,7 @@ func TestConfigStructure(t *testing.T) {
 		assert.Equal(t, 50052, cfg.GRPC.Servers["main"].Port)
 
 		require.NotNil(t, cfg.HTTP)
-		assert.Equal(t, 8080, cfg.HTTP.Port)
+		assert.Equal(t, 8080, cfg.HTTP.Servers["main"].Port)
 	})
 
 	t.Run("nil_optional_fields", func(t *testing.T) {

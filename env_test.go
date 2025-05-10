@@ -1,7 +1,6 @@
 package zaal_test
 
 import (
-	"fmt"
 	"os"
 	"testing"
 
@@ -52,7 +51,7 @@ func TestLoadEnvVars(t *testing.T) {
 		os.Unsetenv("RABBITMQ_URI")
 		os.Unsetenv("MAIN_GRPC_PORT")
 		os.Unsetenv("MAIN_GRPC_CLIENT_ADDRESS")
-		os.Unsetenv("HTTP_PORT")
+		os.Unsetenv("MAIN_HTTP_PORT")
 	}
 
 	t.Run("load_basic_vars/ok", func(t *testing.T) {
@@ -110,34 +109,33 @@ func TestLoadEnvVars(t *testing.T) {
 		defer resetEnvVars()
 
 		os.Setenv("MAIN_GRPC_PORT", "50051")
-		os.Setenv("HTTP_PORT", "8080")
+		os.Setenv("MAIN_HTTP_PORT", "8080")
 
 		cfg := &zaal.Config{
 			Name:    "test-app",
 			Title:   "Test App",
 			Version: "1.0.0",
 			GRPC:    &zaal.GRPCConfig{Servers: map[string]zaal.GRPCServerConfig{"main": {}}},
-			HTTP:    &zaal.HTTPConfig{},
+			HTTP:    &zaal.HTTPConfig{Servers: map[string]zaal.HTTPServerConfig{"main": {}}},
 		}
 
 		err := zaal.LoadEnvVars(cfg)
 		require.NoError(t, err)
 
 		assert.Equal(t, 50051, cfg.GRPC.Servers["main"].Port)
-		assert.Equal(t, 8080, cfg.HTTP.Port)
+		assert.Equal(t, 8080, cfg.HTTP.Servers["main"].Port)
 	})
 
 	t.Run("invalid_numeric_var/error", func(t *testing.T) {
 		defer resetEnvVars()
 
-		os.Setenv("HTTP_PORT", "not-a-number")
+		os.Setenv("MAIN_HTTP_PORT", "not-a-number")
 
 		cfg := &zaal.Config{
-			HTTP: &zaal.HTTPConfig{},
+			HTTP: &zaal.HTTPConfig{Servers: map[string]zaal.HTTPServerConfig{"main": {}}},
 		}
 
 		err := zaal.LoadEnvVars(cfg)
-		fmt.Println(err)
 		assert.Error(t, err)
 		assert.Contains(t, err.Error(), "error converting env var")
 	})
@@ -175,7 +173,7 @@ func TestLoadEnvVars(t *testing.T) {
 		os.Setenv("MONGODB_DBNAME", "proddb")
 		os.Setenv("RABBITMQ_URI", "amqp://guest:guest@rabbitmq:5672/")
 		os.Setenv("MAIN_GRPC_PORT", "5000")
-		os.Setenv("HTTP_PORT", "8000")
+		os.Setenv("MAIN_HTTP_PORT", "8000")
 
 		cfg := &zaal.Config{
 			Name:    "prod-app",
@@ -185,7 +183,7 @@ func TestLoadEnvVars(t *testing.T) {
 			Mongodb: &zaal.MongodbConfig{},
 			RabbiMQ: &zaal.RabbitMQConfig{},
 			GRPC:    &zaal.GRPCConfig{Servers: map[string]zaal.GRPCServerConfig{"main": {}}},
-			HTTP:    &zaal.HTTPConfig{},
+			HTTP:    &zaal.HTTPConfig{Servers: map[string]zaal.HTTPServerConfig{"main": {}}},
 		}
 
 		err := zaal.LoadEnvVars(cfg)
@@ -201,7 +199,7 @@ func TestLoadEnvVars(t *testing.T) {
 		assert.Equal(t, "proddb", cfg.Mongodb.DbName)
 		assert.Equal(t, "amqp://guest:guest@rabbitmq:5672/", cfg.RabbiMQ.URI)
 		assert.Equal(t, 5000, cfg.GRPC.Servers["main"].Port)
-		assert.Equal(t, 8000, cfg.HTTP.Port)
+		assert.Equal(t, 8000, cfg.HTTP.Servers["main"].Port)
 	})
 
 	t.Run("nil_pointer_in_config/ok", func(t *testing.T) {
