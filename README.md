@@ -1,42 +1,133 @@
 # Zaal
 
-🚧 **Project Status: Early Stages of Development** 🚧
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Go Reference](https://pkg.go.dev/badge/github.com/47monad/zaal.svg)](https://pkg.go.dev/github.com/47monad/zaal)
+![Status: Under Development](https://img.shields.io/badge/Status-Under%20Development-orange)
 
-> **⚠️ Important:** This project is currently in its **early stages** of development. **It is not yet stable** and should **not be used in production environments**. The codebase is subject to **frequent changes**, and breaking changes can occur at any time.
-
----
+> Named after Zāl (زال), the legendary Persian hero and father of Rostam in Ferdowsi's Shahnameh.
 
 ## Overview
 
-Welcome to **Zaal**! This repository is under **heavy development** and is expected to reach a production-ready state in the coming months. While we are working hard to ensure the codebase becomes robust, scalable, and feature-complete, there are currently many features and improvements being added regularly.
+Zaal is a robust configuration management package for Go applications that combines the power of [CUE](https://cuelang.org/) with environment variable handling. It allows you to:
 
-Our goal is to make this project stable, secure, and ready for production usage as soon as possible.
+1. Load structured configuration from CUE files
+2. Override configuration values with environment variables
+3. Access your configuration in a type-safe manner
 
-## Current Status
+## ⚠️ Development Status
 
-- 🚧 **Work in Progress:** The project is evolving rapidly.
-- 🛠 **Frequent Changes:** Expect breaking changes, as we are still shaping the core structure.
-- 📅 **Expected Production-Ready Date:** Targeting stability and public release in the **next few months**.
+**This package is in heavy development and is not ready for production use yet.**
 
-## How to Contribute
+Features and APIs may change significantly before the first stable release.
 
-Contributions are welcome, but please note the current state of the project:
+## Installation
 
-- Fork the repository and create your feature branch: `git checkout -b feature/your-feature`.
-- Commit your changes: `git commit -m 'Add your feature'`.
-- Push to the branch: `git push origin feature/your-feature`.
-- Submit a pull request.
+```bash
+go get github.com/47monad/zaal
+```
 
----
+## Basic Usage
+
+```go
+package main
+
+import (
+ "fmt"
+ "log"
+
+ "github.com/your-repo/zaal"
+)
+
+func main() {
+ // Load configuration from CUE file
+ var cfg zaal.Config
+ 
+ // Option 1: Load config file directly
+ if err := zaal.Build("config.cue", ".env"); err != nil {
+  log.Fatalf("Failed to load config: %v", err)
+ }
+ 
+ // Use your configuration
+ fmt.Printf("Application: %s v%s\n", cfg.Name, cfg.Version)
+ fmt.Printf("Environment: %s\n", cfg.Env)
+ 
+ if cfg.Mongodb != nil {
+  fmt.Printf("MongoDB URI: %s\n", cfg.Mongodb.URI)
+ }
+}
+```
+
+## Configuration Structure
+
+Zaal supports a flexible configuration structure with nested objects, optional components, and automatic environment variable binding:
+
+```go
+type Config struct {
+ Name       string            `json:"name"`
+ Title      string            `json:"title"`
+ Version    string            `json:"version"`
+ Env        string            `json:"env" env:"env"`
+ Mode       string            `json:"mode" env:"mode"`
+ Host       string            `json:"host" env:"host"`
+ Logging    LoggingConfig     `json:"logging"`
+ Mongodb    *MongodbConfig    `json:"mongodb,omitempty"`
+ RabbiMQ    *RabbitMQConfig   `json:"rabbitmq,omitempty"`
+ Prometheus *PrometheusConfig `json:"prometheus,omitempty"`
+ GRPC       *GRPCConfig       `json:"grpc,omitempty"`
+ HTTP       *HTTPConfig       `json:"http,omitempty"`
+}
+```
+
+## Environment Variable Binding
+
+Zaal automatically binds environment variables to your configuration based on the `env` struct tags:
+
+```go
+// Config struct field with env tag
+Env string `json:"env" env:"env"`
+
+// Environment variable: ENV="production"
+// Result: cfg.Env == "production"
+```
+
+For nested fields, environment variables are bound in a flattened structure:
+
+```go
+// Config struct
+type Config struct {
+ Mongodb *MongodbConfig `json:"mongodb,omitempty"`
+}
+
+// MongodbConfig struct
+type MongodbConfig struct {
+ URI string `json:"uri" env:"mongodb_uri"`
+}
+
+// Environment variable: MONGODB_URI="mongodb://localhost:27017"
+// Result: cfg.Mongodb.URI == "mongodb://localhost:27017"
+```
+
+## Features
+
+- **Type Safety**: Strongly typed configuration with Go structs
+- **Validation**: CUE schema validation ensures your configuration is correct
+- **Environment Overlay**: Override configuration with environment variables
+- **Optional Components**: Use pointer fields for optional configuration sections
+- **Flexible Loading**: Load from files, environment, or both
 
 ## Roadmap
 
-- [ ] Stabilize core features
-- [ ] Add documentation and usage examples
-- [ ] Finalize API and release v1.0
+- [ ] Comprehensive documentation
+- [ ] Schema validation using CUE
+- [ ] Configuration merging from multiple sources
+- [ ] Command-line argument support
+- [ ] Secrets management integration
+- [ ] Hot reloading support
 
-Stay tuned for more updates!
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT License - see the LICENSE file for details.
