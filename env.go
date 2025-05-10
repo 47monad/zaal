@@ -20,16 +20,19 @@ func LoadEnvFile(path string) error {
 
 func LoadEnvVars(cfg *Config) error {
 	val := reflect.ValueOf(cfg).Elem()
-	return setFields(val)
+	return setFields(val, "")
 }
 
-func setFields(val reflect.Value) error {
+func setFields(val reflect.Value, ctx string) error {
 	for i := 0; i < val.Type().NumField(); i++ {
 		field := val.Type().Field(i)
 		fieldVal := val.Field(i)
 
 		envTag := field.Tag.Get("env")
 		if envTag != "" {
+			if ctx != "" {
+				envTag = ctx + "_" + envTag
+			}
 			tagName := strings.ToUpper(envTag)
 			envValue := os.Getenv(tagName)
 			if envValue != "" {
@@ -55,11 +58,27 @@ func setFields(val reflect.Value) error {
 		} else if fieldVal.Kind() == reflect.Struct {
 			// Recursively process nested structs
 			if fieldVal.Type().String() != "time.Time" {
-				setFields(fieldVal)
+				setFields(fieldVal, "")
 			}
 		} else if fieldVal.Kind() == reflect.Ptr && !fieldVal.IsNil() &&
 			fieldVal.Elem().Kind() == reflect.Struct {
-			setFields(fieldVal.Elem())
+			setFields(fieldVal.Elem(), "")
+		} else if fieldVal.Kind() == reflect.Map {
+			keys := fieldVal.MapKeys()
+
+			for _, k := range keys {
+				origValue := fieldVal.MapIndex(k)
+				newValue := reflect.New(origValue.Type()).Elem()
+				newValue.Set(origValue)
+
+				if newValue.Kind() == reflect.Struct {
+					if err := setFields(newValue, k.String()); err != nil {
+						return err
+					}
+					fieldVal.SetMapIndex(k, newValue)
+				}
+
+			}
 		}
 	}
 	return nil
