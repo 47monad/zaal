@@ -45,8 +45,12 @@ type GRPCConfig struct {
 	Servers map[string]GRPCServerConfig `json:"servers"`
 }
 
-type HTTPConfig struct {
+type HTTPServerConfig struct {
 	Port int `json:"port" env:"http_port"`
+}
+
+type HTTPConfig struct {
+	Servers map[string]HTTPServerConfig `json:"servers"`
 }
 
 type Config struct {

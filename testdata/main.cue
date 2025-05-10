@@ -10,7 +10,9 @@ service: {
   //   level: "error"
   // }
   http: {
-    port: 8787
+    servers: main: {
+      port: 8787
+    }
   }
   grpc: {
     clients: {
