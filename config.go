@@ -17,6 +17,13 @@ type MongodbConfig struct {
 	Options  MongodbOptions `json:"options"`
 }
 
+type EtcdConfig struct {
+	Endpoints string `json:"endpoints" env:"etcd_endpoints"`
+	Username  string `json:"username" env:"etcd_username"`
+	Password  string `json:"password" env:"etcd_password"`
+	Timeout   int    `json:"timeout" env:"etcd_timeout"`
+}
+
 type RabbitMQConfig struct {
 	URI string `json:"uri" env:"rabbitmq_uri"`
 }
@@ -62,6 +69,7 @@ type Config struct {
 	Host       string            `json:"host" env:"host"`
 	Logging    LoggingConfig     `json:"logging"`
 	Mongodb    *MongodbConfig    `json:"mongodb,omitempty"`
+	Etcd       *EtcdConfig       `json:"etcd,omitempty"`
 	RabbiMQ    *RabbitMQConfig   `json:"rabbitmq,omitempty"`
 	Prometheus *PrometheusConfig `json:"prometheus,omitempty"`
 	GRPC       *GRPCConfig       `json:"grpc,omitempty"`

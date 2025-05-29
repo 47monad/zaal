@@ -20,6 +20,7 @@ import (
   mode: *"normal" | #Mode
   logging: log.config
   mongodb?: db.mongodb
+  etcd?: db.etcd
   rabbitmq?: broker.rabbitmq
   prometheus?: monitoring.prometheus
   grpc?: interface.grpc
