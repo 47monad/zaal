@@ -25,7 +25,9 @@ type EtcdConfig struct {
 }
 
 type RabbitMQConfig struct {
-	URI string `json:"uri" env:"rabbitmq_uri"`
+	URI              string `json:"uri" env:"rabbitmq_uri"`
+	MinRetryInterval int    `json:"minRetryInterval"`
+	MaxRetryInterval int    `json:"maxRetryInterval"`
 }
 
 type PrometheusConfig struct {
