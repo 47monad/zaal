@@ -17,6 +17,18 @@ import (
 //go:embed cue
 var cueFS embed.FS
 
+func MustNew(configPath, envPath string) *Config {
+	config, err := Build(configPath, envPath)
+	if err != nil {
+		panic(err)
+	}
+	return config
+}
+
+func New(configPath, envPath string) (*Config, error) {
+	return Build(configPath, envPath)
+}
+
 func Build(configPath, envPath string) (*Config, error) {
 	if _, err := os.Stat(envPath); err == nil {
 		LoadEnvFile(envPath)
