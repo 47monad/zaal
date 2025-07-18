@@ -86,13 +86,15 @@ func TestLoadEnvVars(t *testing.T) {
 		os.Setenv("MONGODB_USERNAME", "testuser")
 		os.Setenv("MONGODB_PASSWORD", "testpass")
 		os.Setenv("MONGODB_DBNAME", "testdb")
+		os.Setenv("POSTGRES_URI", "postgres://localhost:2134")
 
 		cfg := &zaal.Config{
-			Name:    "test-app",
-			Title:   "Test App",
-			Version: "1.0.0",
-			Logging: zaal.LoggingConfig{},
-			Mongodb: &zaal.MongodbConfig{},
+			Name:     "test-app",
+			Title:    "Test App",
+			Version:  "1.0.0",
+			Logging:  zaal.LoggingConfig{},
+			Mongodb:  &zaal.MongodbConfig{},
+			Postgres: &zaal.PostgresConfig{},
 		}
 
 		err := zaal.LoadEnvVars(cfg)
@@ -102,7 +104,8 @@ func TestLoadEnvVars(t *testing.T) {
 		assert.Equal(t, "mongodb://localhost:27017", cfg.Mongodb.URI)
 		assert.Equal(t, "testuser", cfg.Mongodb.Username)
 		assert.Equal(t, "testpass", cfg.Mongodb.Password)
-		assert.Equal(t, "testdb", cfg.Mongodb.DbName)
+		assert.Equal(t, "testdb", cfg.Mongodb.DBName)
+		assert.Equal(t, "postgres://localhost:2134", cfg.Postgres.URI)
 	})
 
 	t.Run("load_numeric_vars/ok", func(t *testing.T) {
@@ -196,7 +199,7 @@ func TestLoadEnvVars(t *testing.T) {
 		assert.Equal(t, "mongodb://mongo:27017", cfg.Mongodb.URI)
 		assert.Equal(t, "produser", cfg.Mongodb.Username)
 		assert.Equal(t, "prodpass", cfg.Mongodb.Password)
-		assert.Equal(t, "proddb", cfg.Mongodb.DbName)
+		assert.Equal(t, "proddb", cfg.Mongodb.DBName)
 		assert.Equal(t, "amqp://guest:guest@rabbitmq:5672/", cfg.RabbiMQ.URI)
 		assert.Equal(t, 5000, cfg.GRPC.Servers["main"].Port)
 		assert.Equal(t, 8000, cfg.HTTP.Servers["main"].Port)

@@ -28,7 +28,7 @@ func TestConfigStructure(t *testing.T) {
 			URI:      "mongodb://localhost:27017",
 			Username: "user",
 			Password: "pass",
-			DbName:   "testdb",
+			DBName:   "testdb",
 			Hosts:    []string{"localhost:27017", "localhost:27018"},
 			Options: zaal.MongodbOptions{
 				ReplicaSet: "rs0",
@@ -38,7 +38,7 @@ func TestConfigStructure(t *testing.T) {
 		assert.Equal(t, "mongodb://localhost:27017", cfg.URI)
 		assert.Equal(t, "user", cfg.Username)
 		assert.Equal(t, "pass", cfg.Password)
-		assert.Equal(t, "testdb", cfg.DbName)
+		assert.Equal(t, "testdb", cfg.DBName)
 		assert.Equal(t, []string{"localhost:27017", "localhost:27018"}, cfg.Hosts)
 		assert.Equal(t, "rs0", cfg.Options.ReplicaSet)
 	})
@@ -125,6 +125,13 @@ func TestConfigStructure(t *testing.T) {
 		assert.Equal(t, 8080, cfg.Servers["main"].Port)
 	})
 
+	t.Run("PostgresConfig_struct", func(t *testing.T) {
+		cfg := zaal.PostgresConfig{
+			URI: "postgres://localhost:2231",
+		}
+		assert.Equal(t, "postgres://localhost:2231", cfg.URI)
+	})
+
 	t.Run("full_struct", func(t *testing.T) {
 		cfg := zaal.Config{
 			Name:    "test-app",
@@ -140,11 +147,14 @@ func TestConfigStructure(t *testing.T) {
 				URI:      "mongodb://localhost:27017",
 				Username: "user",
 				Password: "pass",
-				DbName:   "testdb",
+				DBName:   "testdb",
 				Hosts:    []string{"localhost:27017"},
 				Options: zaal.MongodbOptions{
 					ReplicaSet: "rs0",
 				},
+			},
+			Postgres: &zaal.PostgresConfig{
+				URI: "localhost:2213",
 			},
 			RabbiMQ: &zaal.RabbitMQConfig{
 				URI: "amqp://guest:guest@localhost:5672/",
@@ -189,6 +199,9 @@ func TestConfigStructure(t *testing.T) {
 		require.NotNil(t, cfg.Mongodb)
 		assert.Equal(t, "mongodb://localhost:27017", cfg.Mongodb.URI)
 		assert.Equal(t, "user", cfg.Mongodb.Username)
+
+		require.NotNil(t, cfg.Postgres)
+		assert.Equal(t, "localhost:2213", cfg.Postgres.URI)
 
 		require.NotNil(t, cfg.RabbiMQ)
 		assert.Equal(t, "amqp://guest:guest@localhost:5672/", cfg.RabbiMQ.URI)

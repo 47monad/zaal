@@ -4,6 +4,10 @@ type LoggingConfig struct {
 	Level string `json:"level" env:"log_level"`
 }
 
+type PostgresConfig struct {
+	URI string `json:"uri" env:"postgres_uri"`
+}
+
 type MongodbOptions struct {
 	ReplicaSet string `json:"replicaSet"`
 }
@@ -12,7 +16,7 @@ type MongodbConfig struct {
 	URI      string         `json:"uri" env:"mongodb_uri"`
 	Username string         `json:"username" env:"mongodb_username"`
 	Password string         `json:"password" env:"mongodb_password"`
-	DbName   string         `json:"dbName" env:"mongodb_dbname"`
+	DBName   string         `json:"dbName" env:"mongodb_dbname"`
 	Hosts    []string       `json:"hosts"`
 	Options  MongodbOptions `json:"options"`
 }
@@ -71,6 +75,7 @@ type Config struct {
 	Host       string            `json:"host" env:"host"`
 	Logging    LoggingConfig     `json:"logging"`
 	Mongodb    *MongodbConfig    `json:"mongodb,omitempty"`
+	Postgres   *PostgresConfig   `json:"postgres,omitempty"`
 	Etcd       *EtcdConfig       `json:"etcd,omitempty"`
 	RabbiMQ    *RabbitMQConfig   `json:"rabbitmq,omitempty"`
 	Prometheus *PrometheusConfig `json:"prometheus,omitempty"`
