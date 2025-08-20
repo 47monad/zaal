@@ -5,7 +5,12 @@ type LoggingConfig struct {
 }
 
 type PostgresConfig struct {
-	URI string `json:"uri" env:"postgres_uri"`
+	URI      string `json:"uri" env:"postgres_uri"`
+	Username string `json:"username" env:"postgres_username"`
+	Password string `json:"password" env:"postgres_password"`
+	Host     string `json:"host" env:"postgres_host"`
+	Port     string `json:"port" env:"postgres_port"`
+	DBName   string `json:"dbName" env:"postgres_db_name"`
 }
 
 type MongodbOptions struct {
