@@ -156,7 +156,7 @@ func TestConfigStructure(t *testing.T) {
 			Postgres: &zaal.PostgresConfig{
 				URI: "localhost:2213",
 			},
-			RabbiMQ: &zaal.RabbitMQConfig{
+			RabbitMQ: &zaal.RabbitMQConfig{
 				URI: "amqp://guest:guest@localhost:5672/",
 			},
 			Prometheus: &zaal.PrometheusConfig{
@@ -203,8 +203,8 @@ func TestConfigStructure(t *testing.T) {
 		require.NotNil(t, cfg.Postgres)
 		assert.Equal(t, "localhost:2213", cfg.Postgres.URI)
 
-		require.NotNil(t, cfg.RabbiMQ)
-		assert.Equal(t, "amqp://guest:guest@localhost:5672/", cfg.RabbiMQ.URI)
+		require.NotNil(t, cfg.RabbitMQ)
+		assert.Equal(t, "amqp://guest:guest@localhost:5672/", cfg.RabbitMQ.URI)
 
 		require.NotNil(t, cfg.Prometheus)
 		assert.True(t, cfg.Prometheus.GRPCMetrics)
@@ -233,7 +233,7 @@ func TestConfigStructure(t *testing.T) {
 		assert.Equal(t, "minimal-app", cfg.Name)
 		assert.Equal(t, "Minimal Application", cfg.Title)
 		assert.Nil(t, cfg.Mongodb)
-		assert.Nil(t, cfg.RabbiMQ)
+		assert.Nil(t, cfg.RabbitMQ)
 		assert.Nil(t, cfg.Prometheus)
 		assert.Nil(t, cfg.GRPC)
 		assert.Nil(t, cfg.HTTP)
