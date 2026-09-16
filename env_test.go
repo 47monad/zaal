@@ -48,6 +48,22 @@ func TestLoadEnvVars(t *testing.T) {
 		os.Unsetenv("MONGODB_USERNAME")
 		os.Unsetenv("MONGODB_PASSWORD")
 		os.Unsetenv("MONGODB_DBNAME")
+		os.Unsetenv("MONGODB_DB_NAME")
+		os.Unsetenv("POSTGRES_URI")
+		os.Unsetenv("POSTGRES_HOST")
+		os.Unsetenv("POSTGRES_PORT")
+		os.Unsetenv("POSTGRES_USERNAME")
+		os.Unsetenv("POSTGRES_PASSWORD")
+		os.Unsetenv("POSTGRES_DB_NAME")
+		os.Unsetenv("POSTGRES_SSL_MODE")
+		os.Unsetenv("POSTGRES_APP_NAME")
+		os.Unsetenv("POSTGRES_CONN_TIMEOUT")
+		os.Unsetenv("POSTGRES_MODE")
+		os.Unsetenv("POSTGRES_POOL_MAX_CONNS")
+		os.Unsetenv("POSTGRES_POOL_MIN_CONNS")
+		os.Unsetenv("POSTGRES_POOL_MAX_CONN_LIFETIME")
+		os.Unsetenv("POSTGRES_POOL_MAX_CONN_IDLE_TIME")
+		os.Unsetenv("POSTGRES_POOL_HEALTH_CHECK_INTERVAL")
 		os.Unsetenv("RABBITMQ_URI")
 		os.Unsetenv("MAIN_GRPC_PORT")
 		os.Unsetenv("MAIN_GRPC_CLIENT_ADDRESS")
@@ -106,6 +122,108 @@ func TestLoadEnvVars(t *testing.T) {
 		assert.Equal(t, "testpass", cfg.Mongodb.Password)
 		assert.Equal(t, "testdb", cfg.Mongodb.DBName)
 		assert.Equal(t, "postgres://localhost:2134", cfg.Postgres.URI)
+	})
+
+	// MONGODB_DB_NAME is the standardized name; the legacy MONGODB_DBNAME
+	// is covered by load_nested_vars/ok above.
+	t.Run("load_new_db_name_var/ok", func(t *testing.T) {
+		defer resetEnvVars()
+
+		os.Setenv("MONGODB_DB_NAME", "testdb")
+
+		cfg := &zaal.Config{
+			Mongodb: &zaal.MongodbConfig{},
+		}
+
+		err := zaal.LoadEnvVars(cfg)
+		require.NoError(t, err)
+
+		assert.Equal(t, "testdb", cfg.Mongodb.DBName)
+	})
+
+	t.Run("load_postgres_vars/ok", func(t *testing.T) {
+		defer resetEnvVars()
+
+		os.Setenv("POSTGRES_HOST", "localhost")
+		os.Setenv("POSTGRES_PORT", "5432")
+		os.Setenv("POSTGRES_USERNAME", "postgres")
+		os.Setenv("POSTGRES_PASSWORD", "secret")
+		os.Setenv("POSTGRES_DB_NAME", "testdb")
+		os.Setenv("POSTGRES_SSL_MODE", "require")
+		os.Setenv("POSTGRES_APP_NAME", "test-app")
+		os.Setenv("POSTGRES_CONN_TIMEOUT", "5")
+		os.Setenv("POSTGRES_MODE", "single")
+		os.Setenv("POSTGRES_POOL_MAX_CONNS", "10")
+		os.Setenv("POSTGRES_POOL_MIN_CONNS", "2")
+		os.Setenv("POSTGRES_POOL_MAX_CONN_LIFETIME", "300")
+		os.Setenv("POSTGRES_POOL_MAX_CONN_IDLE_TIME", "60")
+		os.Setenv("POSTGRES_POOL_HEALTH_CHECK_INTERVAL", "30")
+
+		cfg := &zaal.Config{
+			Postgres: &zaal.PostgresConfig{},
+		}
+
+		err := zaal.LoadEnvVars(cfg)
+		require.NoError(t, err)
+
+		pg := cfg.Postgres
+		assert.Equal(t, "localhost", pg.Host)
+		assert.Equal(t, 5432, pg.Port)
+		assert.Equal(t, "postgres", pg.Username)
+		assert.Equal(t, "secret", pg.Password)
+		assert.Equal(t, "testdb", pg.DBName)
+		assert.Equal(t, "require", pg.SSLMode)
+		assert.Equal(t, "test-app", pg.AppName)
+		assert.Equal(t, 5, pg.ConnTimeout)
+		assert.Equal(t, "single", pg.Mode)
+		assert.Equal(t, 10, pg.Pool.MaxConns)
+		assert.Equal(t, 2, pg.Pool.MinConns)
+		assert.Equal(t, 300, pg.Pool.MaxConnLifetime)
+		assert.Equal(t, 60, pg.Pool.MaxConnIdleTime)
+		assert.Equal(t, 30, pg.Pool.HealthCheckInterval)
+	})
+
+	// An optional section absent from the CUE file is allocated when a
+	// matching environment variable is present.
+	t.Run("postgres_section_allocated_from_env/ok", func(t *testing.T) {
+		defer resetEnvVars()
+
+		os.Setenv("POSTGRES_URI", "postgres://localhost:2134/testdb")
+
+		cfg := &zaal.Config{
+			// Postgres is nil
+		}
+
+		err := zaal.LoadEnvVars(cfg)
+		require.NoError(t, err)
+
+		require.NotNil(t, cfg.Postgres)
+		assert.Equal(t, "postgres://localhost:2134/testdb", cfg.Postgres.URI)
+	})
+
+	t.Run("postgres_section_not_allocated_without_env/ok", func(t *testing.T) {
+		defer resetEnvVars()
+
+		cfg := &zaal.Config{}
+
+		err := zaal.LoadEnvVars(cfg)
+		require.NoError(t, err)
+
+		assert.Nil(t, cfg.Postgres)
+	})
+
+	t.Run("postgres_env_var_validation/error", func(t *testing.T) {
+		defer resetEnvVars()
+
+		os.Setenv("POSTGRES_MODE", "garbage")
+
+		cfg := &zaal.Config{
+			Postgres: &zaal.PostgresConfig{},
+		}
+
+		err := zaal.LoadEnvVars(cfg)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "invalid mode")
 	})
 
 	t.Run("load_numeric_vars/ok", func(t *testing.T) {

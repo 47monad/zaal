@@ -19,8 +19,38 @@ func LoadEnvFile(path string) error {
 }
 
 func LoadEnvVars(cfg *Config) error {
+	ensureOptionalSections(cfg)
+
 	val := reflect.ValueOf(cfg).Elem()
-	return setFields(val, "")
+	if err := setFields(val, ""); err != nil {
+		return err
+	}
+
+	// Environment values bypass the CUE schema (see Build), so validate
+	// constraints that the schema would otherwise enforce.
+	if cfg.Postgres != nil {
+		if err := cfg.Postgres.Validate(); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+// ensureOptionalSections allocates optional config sections that are
+// absent from the CUE file when environment variables matching their
+// prefix are set. Currently only the postgres section supports this.
+func ensureOptionalSections(cfg *Config) {
+	if cfg.Postgres != nil {
+		return
+	}
+	for _, entry := range os.Environ() {
+		name, _, _ := strings.Cut(entry, "=")
+		if strings.HasPrefix(name, "POSTGRES_") {
+			cfg.Postgres = &PostgresConfig{}
+			return
+		}
+	}
 }
 
 func setFields(val reflect.Value, ctx string) error {
@@ -35,6 +65,18 @@ func setFields(val reflect.Value, ctx string) error {
 			}
 			tagName := strings.ToUpper(envTag)
 			envValue := os.Getenv(tagName)
+			if envValue == "" {
+				// Fall back to a deprecated name if one is declared, so
+				// existing deployments keep working after a rename.
+				if depTag := field.Tag.Get("envDeprecated"); depTag != "" {
+					depName := strings.ToUpper(depTag)
+					if depValue := os.Getenv(depName); depValue != "" {
+						fmt.Fprintf(os.Stderr, "warning: environment variable %s is deprecated, use %s instead\n",
+							depName, tagName)
+						envValue = depValue
+					}
+				}
+			}
 			if envValue != "" {
 				switch fieldVal.Kind() {
 				case reflect.String:

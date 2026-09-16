@@ -71,12 +71,58 @@ type Config struct {
  Host       string            `json:"host" env:"host"`
  Logging    LoggingConfig     `json:"logging"`
  Mongodb    *MongodbConfig    `json:"mongodb,omitempty"`
+ Postgres   *PostgresConfig   `json:"postgres,omitempty"`
  RabbiMQ    *RabbitMQConfig   `json:"rabbitmq,omitempty"`
  Prometheus *PrometheusConfig `json:"prometheus,omitempty"`
  GRPC       *GRPCConfig       `json:"grpc,omitempty"`
  HTTP       *HTTPConfig       `json:"http,omitempty"`
 }
 ```
+
+## PostgreSQL
+
+The `postgres` section supports two connection modes: `pool` (default) for
+connection pooling, and `single` for a single connection:
+
+```cue
+service: {
+  postgres: {
+    // Either set a full URI...
+    uri: "postgres://user:pass@localhost:5432/mydb"
+
+    // ...or decompose it into parts (uri takes precedence when both are set)
+    host: "localhost"
+    port: 5432
+    username: "user"
+    password: "pass"
+    dbName: "mydb"
+
+    // Optional settings
+    sslMode: "require"     // disable | allow | prefer | require | verify-ca | verify-full
+    appName: "my-app"
+    connTimeout: 5         // seconds
+    mode: "pool"           // "pool" (default) or "single"
+    pool: {
+      maxConns: 10
+      minConns: 2
+      maxConnLifetime: 300   // seconds
+      maxConnIdleTime: 60    // seconds
+      healthCheckInterval: 30 // seconds
+    }
+  }
+}
+```
+
+All fields can be overridden with environment variables, e.g.
+`POSTGRES_URI`, `POSTGRES_PORT`, `POSTGRES_MODE`, `POSTGRES_POOL_MAX_CONNS`.
+Use the generated connection string via `cfg.Postgres.DSN()`:
+
+```go
+dsn, err := cfg.Postgres.DSN() // URI wins when set; otherwise composed from parts
+```
+
+Settings are validated against the CUE schema, and environment overrides are
+re-validated after loading (e.g. `POSTGRES_MODE=garbage` fails the build).
 
 ## Environment Variable Binding
 

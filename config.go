@@ -5,12 +5,25 @@ type LoggingConfig struct {
 }
 
 type PostgresConfig struct {
-	URI      string `json:"uri" env:"postgres_uri"`
-	Username string `json:"username" env:"postgres_username"`
-	Password string `json:"password" env:"postgres_password"`
-	Host     string `json:"host" env:"postgres_host"`
-	Port     string `json:"port" env:"postgres_port"`
-	DBName   string `json:"dbName" env:"postgres_db_name"`
+	URI         string             `json:"uri" env:"postgres_uri"`
+	Host        string             `json:"host" env:"postgres_host"`
+	Port        int                `json:"port" env:"postgres_port"`
+	Username    string             `json:"username" env:"postgres_username"`
+	Password    string             `json:"password" env:"postgres_password"`
+	DBName      string             `json:"dbName" env:"postgres_db_name"`
+	SSLMode     string             `json:"sslMode,omitempty" env:"postgres_ssl_mode"`
+	AppName     string             `json:"appName,omitempty" env:"postgres_app_name"`
+	ConnTimeout int                `json:"connTimeout,omitempty" env:"postgres_conn_timeout"`
+	Mode        string             `json:"mode" env:"postgres_mode"`
+	Pool        PostgresPoolConfig `json:"pool,omitempty"`
+}
+
+type PostgresPoolConfig struct {
+	MaxConns            int `json:"maxConns,omitempty" env:"postgres_pool_max_conns"`
+	MinConns            int `json:"minConns,omitempty" env:"postgres_pool_min_conns"`
+	MaxConnLifetime     int `json:"maxConnLifetime,omitempty" env:"postgres_pool_max_conn_lifetime"`
+	MaxConnIdleTime     int `json:"maxConnIdleTime,omitempty" env:"postgres_pool_max_conn_idle_time"`
+	HealthCheckInterval int `json:"healthCheckInterval,omitempty" env:"postgres_pool_health_check_interval"`
 }
 
 type MongodbOptions struct {
@@ -21,7 +34,7 @@ type MongodbConfig struct {
 	URI      string         `json:"uri" env:"mongodb_uri"`
 	Username string         `json:"username" env:"mongodb_username"`
 	Password string         `json:"password" env:"mongodb_password"`
-	DBName   string         `json:"dbName" env:"mongodb_dbname"`
+	DBName   string         `json:"dbName" env:"mongodb_db_name" envDeprecated:"mongodb_dbname"`
 	Hosts    []string       `json:"hosts"`
 	Options  MongodbOptions `json:"options"`
 }
