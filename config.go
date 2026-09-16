@@ -34,7 +34,7 @@ type MongodbConfig struct {
 	URI      string         `json:"uri" env:"mongodb_uri"`
 	Username string         `json:"username" env:"mongodb_username"`
 	Password string         `json:"password" env:"mongodb_password"`
-	DBName   string         `json:"dbName" env:"mongodb_dbname"`
+	DBName   string         `json:"dbName" env:"mongodb_db_name" envDeprecated:"mongodb_dbname"`
 	Hosts    []string       `json:"hosts"`
 	Options  MongodbOptions `json:"options"`
 }
